@@ -10,8 +10,6 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 
 
-
-
 def plot_time_series(save_folder, file_path, title, x_label, y_label, max_labels=20):
     # Carregar os dados do arquivo CSV
     df = pd.read_csv(file_path, sep=";")

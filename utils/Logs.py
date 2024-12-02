@@ -347,7 +347,11 @@ class LogsJmeter():
 
 class Logs():
     def __init__(self):
-        nomePasta = str(input('Digite a pasta de logs a partir do seu diretorio atual: '))
+        nomePasta = str(
+            input('''
+            Digite a pasta de logs a partir do seu diretorio atual ou caminho completo: 
+            ''')
+        )
         
         print('''
               [1] - VBOX

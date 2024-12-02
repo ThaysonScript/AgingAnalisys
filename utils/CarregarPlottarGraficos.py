@@ -1,4 +1,5 @@
 from classes.PlottarGraficos import PlottarGraficos
+from classes.OtherPlots import plot_fragmentation
 from utils.Logs import Logs
 
 
@@ -13,6 +14,7 @@ class CarregarPlottarGraficos(PlottarGraficos):
         vbox = Logs()
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
+        plot_fragmentation()
         
         # PlottarGraficos().plottar(
         #     title="JMETER",

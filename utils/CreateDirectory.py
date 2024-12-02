@@ -4,7 +4,7 @@ from pathlib import Path
 
 class CreateDirectory:
     def __init__(self, images_folder='imagens_plottadas', 
-        logs_folder='logs_monitoramento_envelhecimento'
+        logs_folder='logs_monitoramento'
     ):
         if not Path(images_folder).exists():
             Path(images_folder).mkdir()
