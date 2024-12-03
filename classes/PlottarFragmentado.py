@@ -6,9 +6,9 @@ class PlottarFragmentado:
     
     
     def analisar(self, minimum_process_occurrences=1):
-        objeto = ManipulationPandas(pastaLogs="")
+        objeto = ManipulationPandas()
         
-        df = objeto.carregarLogDataframe('./fragmentation.csv')
+        df = objeto.carregarLogDataframe(nomeArquivo='./fragmentation.csv')
         
         df = objeto.converterColunaDatetime(df, 'datetime')
         

@@ -1,20 +1,21 @@
+import sys
+from classes.PlottarFragmentado import PlottarFragmentado
 from classes.PlottarGraficos import PlottarGraficos
 from classes.OtherPlots import plot_fragmentation
 from utils.Logs import Logs
 
 
-class CarregarPlottarGraficos(PlottarGraficos):
-    def __init__(self, pastaLogs):
-        super().__init__(pastaLogs)
-        pass
+class CarregarPlottarGraficos():
+    def __init__(self):
+        super().__init__()
     
     
     # ------------------------------------------------ VIRTUALIZADORES ------------------------------------------- #
-    def vbox_plotttar():
-        vbox = Logs()
-        # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
+    def vbox_plotttar(self):
+        vbox = Logs().vboxLogs
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
-        plot_fragmentation()
+        # PlottarFragmentado().analisar()
+        # plot_fragmentation()
         
         # PlottarGraficos().plottar(
         #     title="JMETER",
@@ -26,8 +27,8 @@ class CarregarPlottarGraficos(PlottarGraficos):
         # sys.exit(1)
         
         PlottarGraficos().plottar(
+            nomeArquivo=vbox['monitoring_cpu'], 
             title="CPU",
-            filename=vbox['monitoring_cpu'], 
             ylabel='(percentage)', 
             dayfirst=True, includeColYlabel=True
         )
@@ -105,7 +106,7 @@ class CarregarPlottarGraficos(PlottarGraficos):
         )
         
         
-    def kvm_plottar():
+    def kvm_plottar(self):
         kvm = Logs()
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
@@ -176,7 +177,7 @@ class CarregarPlottarGraficos(PlottarGraficos):
         )
 
 
-    def xen_plottar():
+    def xen_plottar(self):
         xen = Logs()
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
@@ -284,14 +285,14 @@ class CarregarPlottarGraficos(PlottarGraficos):
         )
 
 
-    def lxc_plottar():
+    def lxc_plottar(self):
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
         pass
 
 
     # ------------------------------------------------ CONTAINERS ------------------------------------------- #
-    def docker_antigo():
+    def docker_antigo(self):
         dock_antigo = Logs()
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
@@ -532,7 +533,7 @@ class CarregarPlottarGraficos(PlottarGraficos):
         # )
 
 
-    def docker_novo():
+    def docker_novo(self):
         dock_novo = Logs()
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
@@ -774,7 +775,7 @@ class CarregarPlottarGraficos(PlottarGraficos):
         # )
 
 
-    def podman():
+    def podman(self):
         pod = Logs()
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)

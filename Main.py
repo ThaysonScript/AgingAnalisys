@@ -1,19 +1,14 @@
+import threading
 import sys
-from classes.PlottarGraficos import PlottarGraficos
-from classes.PlottarFragmentado import PlottarFragmentado
 from utils.CarregarPlottarGraficos import CarregarPlottarGraficos
 from utils.CreateDirectory import CreateDirectory
 
 class Main:
     def __init__(self):
         CreateDirectory()
-        PlottarFragmentado().analisar()
-        PlottarGraficos(pastaLogs='').plottar()
-        
+                
         
     def print_usage(self):
-        print('Altere primeiro o arquivo logs.py\n')
-        input('Digite qualquer coisa para continuar _')
         print('---------------- VIRTUALIZADORES ----------------')
         print('Digite [1] para vbox')
         print('Digite [2] para kvm')

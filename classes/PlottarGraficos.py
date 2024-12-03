@@ -4,10 +4,17 @@ from sklearn.linear_model import LinearRegression
 
 
 class PlottarGraficos(ManipulationPandas):
-    def __init__(self, pastaLogs):
-        super().__init__(pastaLogs)
+    def __init__(self):
+        super().__init__()
         
-    def plottar(nomeArquivo, ylabel, datetimeName="date_time", title=None, separador=';', separadorDecimal=",", dayfirst=False, multiply=1, division=1, decimals_quantity=2, includeColYlabel=False, cols_to_divide=[], cols_to_multiply=[]):
+    def plottar(self,
+        nomeArquivo='', ylabel='', 
+        datetimeName="date_time", title=None, 
+        separador=';', separadorDecimal=",", 
+        dayfirst=False, multiply=1, division=1, 
+        decimals_quantity=2, includeColYlabel=False, 
+        cols_to_divide=[], cols_to_multiply=[]
+    ):
         df = ManipulationPandas().carregarLogDataframe(nomeArquivo, separador, separadorDecimal, dayfirst, datetimeName, parse_date=False)
         df = ManipulationPandas().droparColunasNulasVazias(dataframe=df)
         

@@ -2,11 +2,11 @@ import sys
 import pandas as pd
 
 class ManipulationPandas:
-    def __init__(self, pastaLogs):
+    def __init__(self):
         pass
     
     
-    def carregarLogDataframe(self, nomeArquivo, separador, separadorDecimal, dayfirst, datetimeName, parse_date=False):
+    def carregarLogDataframe(self, nomeArquivo='', separador=';', separadorDecimal=',', dayfirst=False, datetimeName='date_time', parse_date=False):
         if parse_date == True:
             try:
                 return pd.read_csv(nomeArquivo, delimiter=separador, decimal=separadorDecimal, dayfirst=dayfirst, parse_dates=[datetimeName]).rename(columns={datetimeName: 'seconds'})

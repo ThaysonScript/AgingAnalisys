@@ -1,9 +1,10 @@
 import sys
+from utils.CreateDirectory import CreateDirectory
 
 
 class CommonLogs():
     def __init__(self, PASTA_LOGS=''):
-        return {
+        self.generalLogs = {
             'monitoring_cpu':
                 f'{PASTA_LOGS}/machine_monitoring-cpu.csv',
                 
@@ -29,23 +30,28 @@ class CommonLogs():
 
 class LogsVbox():
     def __init__(self, PASTA_LOGS='', viewCommonLogs=False):
+        self.PASTA_LOGS = PASTA_LOGS
+        
         if viewCommonLogs == True:
-            CommonLogs(PASTA_LOGS=PASTA_LOGS)
+            self.commonLogs = CommonLogs(PASTA_LOGS=self.PASTA_LOGS).generalLogs
         else:
-            pass
+            print('Erro em LogsVbox para chamar classe CommonLogs')
+            sys.exit(1)
         
         
-    def vboxLogsProcess(self, PASTA_LOGS=''):
-        return {
+    def vboxLogsProcess(self):
+        vboxProcess = {
             'monitoring_VboxHeadless':
-                f'{PASTA_LOGS}/vbox_monitoring-VBoxHeadless.csv',
+                f'{self.PASTA_LOGS}/vbox_monitoring-VBoxHeadless.csv',
             
             'monitoring_VboxSvc':
-                f'{PASTA_LOGS}/vbox_monitoring-VBoxSVC.csv',
+                f'{self.PASTA_LOGS}/vbox_monitoring-VBoxSVC.csv',
             
             'monitoring_VboxXPCOMIPCD':
-                f'{PASTA_LOGS}/vbox_monitoring-VBoxXPCOMIPCD.csv'
+                f'{self.PASTA_LOGS}/vbox_monitoring-VBoxXPCOMIPCD.csv'
         }
+        
+        return {**self.commonLogs, **vboxProcess}
     
     
 class LogsKvm():
@@ -346,12 +352,8 @@ class LogsJmeter():
         }
 
 class Logs():
-    def __init__(self):
-        nomePasta = str(
-            input('''
-            Digite a pasta de logs a partir do seu diretorio atual ou caminho completo: 
-            ''')
-        )
+    def __init__(self):     
+        # self.nomePasta = str(input('Digite a pasta de logs a partir do seu diretorio atual ou caminho completo: '))
         
         print('''
               [1] - VBOX
@@ -365,41 +367,62 @@ class Logs():
         ativarCommonLogs = bool(input('[True] - ativar logs communs\n[False] - não ativar logs communs\n\n'))
         
         if tipoVirtualizador == 1:
-            LogsVbox(PASTA_LOGS=nomePasta, viewCommonLogs=ativarCommonLogs)
-            LogsVbox(viewCommonLogs=ativarCommonLogs).vboxLogsProcess()
+            self.vboxMonitoringFolder = CreateDirectory().encontrarPastaLogs(diretorioBase='logs_monitoramento', padrao='vbox')
+            if self.vboxMonitoringFolder == None:
+                print('vboxMonitoringFolder == None')
+                sys.exit(1)
+                
+            self.vboxLogs = LogsVbox(PASTA_LOGS=self.vboxMonitoringFolder, viewCommonLogs=ativarCommonLogs).vboxLogsProcess()
+            print(self.vboxLogs['monitoring_cpu'])
+            
+            # sys.exit(1)
             
             
         elif tipoVirtualizador == 2:
-            LogsKvm(PASTA_LOGS=nomePasta, viewCommonLogs=ativarCommonLogs)
-            LogsKvm().KvmLogsProcess()
+            self.kvmMonitoringFolder = CreateDirectory().encontrarPastaLogs(diretorioBase='logs_monitoramento', padrao='kvm')
+            if self.kvmMonitoringFolder == None:
+                sys.exit(1)
+                
+            LogsKvm(PASTA_LOGS=self.kvmMonitoringFolder, viewCommonLogs=ativarCommonLogs).KvmLogsProcess()
             
             
         elif tipoVirtualizador == 3:
-            LogsXen(PASTA_LOGS=nomePasta, viewCommonLogs=ativarCommonLogs)
-            LogsXen().XenLogsProcess()
+            self.xenMonitoringFolder = CreateDirectory().encontrarPastaLogs(diretorioBase='logs_monitoramento', padrao='xen')
+            if self.xenMonitoringFolder == None:
+                sys.exit(1)
+                
+            LogsXen(PASTA_LOGS=self.xenMonitoringFolder, viewCommonLogs=ativarCommonLogs).XenLogsProcess()
           
             
         elif tipoVirtualizador == 4:
-            LogsDocker(PASTA_LOGS=nomePasta, viewCommonLogs=ativarCommonLogs)
-            
             dockerType = int(input('[1] - Docker antigo\n[2] - Docker atual: '))
             if dockerType == 1:
-                LogsDocker().dockerOlderLogs()
+                self.dockerOlder = CreateDirectory().encontrarPastaLogs(diretorioBase='logs_monitoramento', padrao='dockerOlder')
+                if self.dockerOlder == None:
+                    sys.exit(1)
+                
+                LogsDocker(PASTA_LOGS=self.dockerOlder, viewCommonLogs=ativarCommonLogs).dockerOlderLogs()
+                
+                
             elif dockerType == 2:
-                LogsDocker().dockerLatestRealeseLogs()
+                self.dockerLatest = CreateDirectory().encontrarPastaLogs(diretorioBase='logs_monitoramento', padrao='dockerLatest')
+                if self.dockerLatest == None:
+                    sys.exit(1)
+                
+                LogsDocker(PASTA_LOGS=self.dockerLatest, viewCommonLogs=ativarCommonLogs).dockerLatestRealeseLogs()
+                
+                
             else:
                 print('valor invalido, saindo.....')
                 sys.exit(1)
             
             
         elif tipoVirtualizador == 5:
-            LogsPodman(PASTA_LOGS=nomePasta, viewCommonLogs=ativarCommonLogs)
-            LogsPodman().PodmanLogsProcess()
+            LogsPodman(PASTA_LOGS=self.nomePasta, viewCommonLogs=ativarCommonLogs).PodmanLogsProcess()
             
             
         elif tipoVirtualizador == 6:
-            LogsJmeter(PASTA_LOGS=nomePasta, viewCommonLogs=ativarCommonLogs)
-            LogsJmeter(viewCommonLogs=ativarCommonLogs).jmeterLogs(PASTA_LOGS=nomePasta)
+            LogsJmeter(PASTA_LOGS=self.nomePasta, viewCommonLogs=ativarCommonLogs).jmeterLogs(PASTA_LOGS=self.nomePasta)
             
             
         else:
