@@ -1,4 +1,7 @@
+import sys
+from utils.CreateDirectory import CreateDirectory
 from utils.ManipulationPandas import ManipulationPandas
+import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
@@ -15,7 +18,11 @@ class PlottarGraficos(ManipulationPandas):
         decimals_quantity=2, includeColYlabel=False, 
         cols_to_divide=[], cols_to_multiply=[]
     ):
-        df = ManipulationPandas().carregarLogDataframe(nomeArquivo, separador, separadorDecimal, dayfirst, datetimeName, parse_date=False)
+        print(f'\n-------------------------------------- Executando plotagens [ {nomeArquivo} ] --------------------------------------')
+        
+        df = ManipulationPandas().carregarLogDataframe(nomeArquivo, separador, separadorDecimal, dayfirst, datetimeName, parse_date=True)
+        ManipulationPandas().verificarErrosEGravar(dataframe=df, nomeArquivo=nomeArquivo)
+        
         df = ManipulationPandas().droparColunasNulasVazias(dataframe=df)
         
         # df['seconds'] = (df['seconds'] - df['seconds'][0]).dt.total_seconds() / 3600
@@ -32,10 +39,8 @@ class PlottarGraficos(ManipulationPandas):
         
         # if nomeArquivo == './plotagem/registros de monitoramento dos testes de envelhecimento/outros/logs/response_times.csv':
         #     df['response_time'] = df['response_time'] / 1000    
-        df['response_time'] = ManipulationPandas().converterTempoRespostaServico(
-            dataframe=df, 
-            nomeArquivo='./plotagem/registros de monitoramento dos testes de envelhecimento/outros/logs/response_times.csv'
-        )
+        if nomeArquivo.endswith('nginx_response.csv'):
+            df = ManipulationPandas().converterTempoRespostaServico(dataframe=df)
         
         
         # # perform data division
@@ -93,4 +98,9 @@ class PlottarGraficos(ManipulationPandas):
             by_label = dict(zip(labels, handles))
             ax.legend(by_label.values(), by_label.keys())
             
-            ManipulationPandas.salvarFigura(ax=ax, nomeFigura='algo.png')
+            ManipulationPandas().salvarFigura(ax=ax, nomeFigura=f'./imagens_plottadas/{title}-{col}.png')
+            plt.close(ax.figure)
+            
+            
+        
+        

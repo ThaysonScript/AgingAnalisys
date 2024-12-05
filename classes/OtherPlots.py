@@ -329,8 +329,8 @@ def plot_fragmentation(folder, merge_equals=True, process_per_plot=20, relevant_
         plt.tight_layout()
         plt.grid(True)
         
-        folder = Path('./plotagem/')
-        plt.savefig(folder.joinpath('plot_images').joinpath(f"Time Series of memory fragmentation - Proccess {i * process_per_plot + 1} a {(i + 1) * process_per_plot}.png"))
+        folder = Path('./imagens_plottadas/')
+        plt.savefig(folder.joinpath(f"Time Series of memory fragmentation - Proccess {i * process_per_plot + 1} a {(i + 1) * process_per_plot}.png"))
         #plt.show()
     return 1
 
@@ -390,7 +390,8 @@ def process_subdatasets(subdatasets, process_counts):
 
 def process_all_files(directory):
     # Encontrar todos os arquivos que começam com 'fragmentation_'
-    pattern = os.path.join(directory, 'fragmentation*.csv')
+    
+    pattern = os.path.join(directory, '*fragmentation.csv')
     files = glob.glob(pattern)
 
     all_datasets = []

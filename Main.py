@@ -24,25 +24,25 @@ class Main:
     
     def startPlots(self, typePlot):
         if typePlot == 1:
-            CarregarPlottarGraficos().vbox_plotttar()
+            CarregarPlottarGraficos(typePlot).vbox_plotttar()
         
         elif typePlot == 2:
-            CarregarPlottarGraficos().kvm_plottar()
+            CarregarPlottarGraficos(typePlot).kvm_plottar()
             
         elif typePlot == 3:
-            CarregarPlottarGraficos().xen_plottar()
+            CarregarPlottarGraficos(typePlot).xen_plottar()
             
         elif typePlot == 4:
-            CarregarPlottarGraficos().lxc_plottar()
+            CarregarPlottarGraficos(typePlot).lxc_plottar()
             
         elif typePlot == 5:
-            CarregarPlottarGraficos().docker_antigo()
+            CarregarPlottarGraficos(typePlot).docker_antigo()
             
         elif typePlot == 6:
-            CarregarPlottarGraficos().docker_novo()
+            CarregarPlottarGraficos(typePlot).docker_novo()
             
         elif typePlot == 7:
-            CarregarPlottarGraficos().podman()
+            CarregarPlottarGraficos(typePlot).podman()
             
         else:
             print('Escolha uma opção válida!')

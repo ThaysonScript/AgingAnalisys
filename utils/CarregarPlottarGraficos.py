@@ -2,32 +2,33 @@ import sys
 from classes.PlottarFragmentado import PlottarFragmentado
 from classes.PlottarGraficos import PlottarGraficos
 from classes.OtherPlots import plot_fragmentation
+from utils.TratamentoErrosEnvelhecimentoLogs import TratamentoErrosEnvelhecimentoLogs
 from utils.Logs import Logs
 
 
 class CarregarPlottarGraficos():
-    def __init__(self):
-        super().__init__()
+    def __init__(self, tipo_virtualizador):
+        self.virtualizador = tipo_virtualizador
     
     
     # ------------------------------------------------ VIRTUALIZADORES ------------------------------------------- #
     def vbox_plotttar(self):
-        vbox = Logs().vboxLogs
-        # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
-        # PlottarFragmentado().analisar()
-        # plot_fragmentation()
-        
         # PlottarGraficos().plottar(
         #     title="JMETER",
         #     filename=jmeter['jmeter_log'],
         #     ylabel='(none)',
         #     dayfirst=True, includeColYlabel=True
         # )
-        
         # sys.exit(1)
         
+        vbox = Logs(self.virtualizador)
+        TratamentoErrosEnvelhecimentoLogs(vbox.vboxMonitoringFolder)
+        PlottarFragmentado().analisar(arquivo=vbox.vboxLogs['fragmentation'])
+        plot_fragmentation(vbox.vboxMonitoringFolder)
+        
+        
         PlottarGraficos().plottar(
-            nomeArquivo=vbox['monitoring_cpu'], 
+            nomeArquivo=vbox.vboxLogs['monitoring_cpu'], 
             title="CPU",
             ylabel='(percentage)', 
             dayfirst=True, includeColYlabel=True
@@ -35,21 +36,21 @@ class CarregarPlottarGraficos():
 
         PlottarGraficos().plottar(
             title="Disk", 
-            filename=vbox['monitoring_disks'], 
+            nomeArquivo=vbox.vboxLogs['monitoring_disks'], 
             ylabel='Disk usage (GB)', 
             dayfirst=True, division=(1024**2)
         )
 
         PlottarGraficos().plottar(
             title="Zumbis", 
-            filename=vbox['monitoring_zumbies'], 
+            nomeArquivo=vbox.vboxLogs['monitoring_zumbies'], 
             ylabel='Zumbis processes(qtt)', 
             dayfirst=True
         )
 
         PlottarGraficos().plottar(
             title="Memory", 
-            filename=vbox['monitoring_mem'], 
+            nomeArquivo=vbox.vboxLogs['monitoring_mem'], 
             ylabel='(MB)', 
             dayfirst=True, 
             division=1024, includeColYlabel=True
@@ -57,7 +58,7 @@ class CarregarPlottarGraficos():
 
         PlottarGraficos().plottar(
             title="Process - VBoxHeadless", 
-            filename=vbox['monitoring_VboxHeadless'], 
+            nomeArquivo=vbox.vboxLogs['monitoring_VboxHeadless'], 
             cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
                 'cpu': 'CPU usage (percentage)',
@@ -72,7 +73,7 @@ class CarregarPlottarGraficos():
 
         PlottarGraficos().plottar(
             title="Process - VBoxSVC", 
-            filename=vbox['monitoring_VboxSvc'], 
+            nomeArquivo=vbox.vboxLogs['monitoring_VboxSvc'], 
             cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
                 'cpu': 'CPU usage (percentage)',
@@ -86,7 +87,7 @@ class CarregarPlottarGraficos():
 
         PlottarGraficos().plottar(
             title="Process - VBoxXPCOMIPCD", 
-            filename=vbox['monitoring_VboxXPCOMIPCD'], 
+            nomeArquivo=vbox.vboxLogs['monitoring_VboxXPCOMIPCD'], 
             cols_to_divide=["vmrss", "vsz", "swap"],
             ylabel={
                 'cpu': 'CPU usage (percentage)',
@@ -100,7 +101,7 @@ class CarregarPlottarGraficos():
 
         PlottarGraficos().plottar(
             title="Server response time", 
-            filename=vbox['server_response_time_monitoring'], 
+            nomeArquivo=vbox.vboxLogs['server_response_time_monitoring'], 
             ylabel='Response time(s)', 
             multiply=1000, dayfirst=True
         )

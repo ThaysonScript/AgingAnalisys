@@ -5,10 +5,10 @@ class PlottarFragmentado:
         pass
     
     
-    def analisar(self, minimum_process_occurrences=1):
+    def analisar(self, minimum_process_occurrences=1, arquivo=''):
         objeto = ManipulationPandas()
         
-        df = objeto.carregarLogDataframe(nomeArquivo='./fragmentation.csv')
+        df = objeto.carregarLogDataframe(nomeArquivo=arquivo)
         
         df = objeto.converterColunaDatetime(df, 'datetime')
         
@@ -28,4 +28,4 @@ class PlottarFragmentado:
         objeto.fixarValoresInteirosGrafico(ax=ax)
         
         # Save the figure
-        objeto.salvarFigura(ax=ax, nomeFigura='./fragmentação.png')
+        objeto.salvarFigura(ax=ax, nomeFigura=f'imagens_plottadas/fragmentation.png')
