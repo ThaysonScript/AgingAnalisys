@@ -1,5 +1,6 @@
 import os
 import sys
+from matplotlib import pyplot as plt
 import pandas as pd
 
 class ManipulationPandas:
@@ -85,8 +86,15 @@ class ManipulationPandas:
         ax.set_yticklabels(ax.get_yticks().astype(int))
         
         
-    def plotarGrafico(self, dataframe: pd, yLabel, xLabel, figureSize):
-        return dataframe.plot(ylabel=yLabel, xlabel=xLabel, figsize=figureSize)
+    # def plotarGrafico(self, dataframe: pd, yLabel, xLabel, figureSize):
+    #     return dataframe.plot.scatter(ylabel=yLabel, xlabel=xLabel, figsize=figureSize)
+    def plotarGrafico(self, dataframe: pd.DataFrame, x_col: str, y_col: str, yLabel: str, xLabel: str, figureSize=(10, 6)):
+        fig, ax = plt.subplots(figsize=figureSize)
+        ax.scatter(dataframe[x_col], dataframe[y_col], c='DarkBlue', label='Data points')
+        ax.set_xlabel(xLabel)
+        ax.set_ylabel(yLabel)
+        ax.legend()
+        return ax
     
     
     def pivotarValoresDataframe(self, dataframe: pd, column, value):

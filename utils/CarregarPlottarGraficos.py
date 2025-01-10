@@ -24,7 +24,7 @@ class CarregarPlottarGraficos():
         vbox = Logs(self.virtualizador)
         TratamentoErrosEnvelhecimentoLogs(vbox.vboxMonitoringFolder)
         PlottarFragmentado().analisar(arquivo=vbox.vboxLogs['fragmentation'])
-        plot_fragmentation(vbox.vboxMonitoringFolder)
+        # plot_fragmentation(vbox.vboxMonitoringFolder)
         
         
         PlottarGraficos().plottar(

@@ -1,4 +1,3 @@
-import threading
 import sys
 from utils.CarregarPlottarGraficos import CarregarPlottarGraficos
 from utils.CreateDirectory import CreateDirectory
