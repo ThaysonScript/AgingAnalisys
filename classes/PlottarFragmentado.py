@@ -36,14 +36,15 @@ class PlottarFragmentado:
         df_pivot = objeto.pivotarValoresDataframe(dataframe=df_filtered, column='process', value='process_occurrences')
         
         # ax = objeto.plotarGrafico(dataframe=df_pivot, yLabel='Process occurrences (qtt)', xLabel='Time(H)', figureSize=(10, 6))
-        ax = objeto.plotarGrafico(
-            dataframe=df_filtered,
-            x_col='time_passed',
-            y_col='process_occurrences',
-            yLabel='Process occurrences (qtt)',
-            xLabel='Time(H)',
-            figureSize=(10, 6)
-        )
+        # ax = objeto.plotarGrafico(
+        #     dataframe=df_filtered,
+        #     x_col='time_passed',
+        #     y_col='process_occurrences',
+        #     yLabel='Process occurrences (qtt)',
+        #     xLabel='Time(H)',
+        #     figureSize=(10, 6)
+        # )
+        ax = objeto.plotarGrafico(dataframe=df_pivot, yLabel='Process occurrences (qtt)', xLabel='Time(H)', figureSize=(10, 6))
 
         
         objeto.fixarValoresInteirosGrafico(ax=ax)

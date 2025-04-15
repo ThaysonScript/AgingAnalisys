@@ -12,7 +12,7 @@ class Main:
         print('Digite [1] para vbox')
         print('Digite [2] para kvm')
         print('Digite [3] para xen')
-        print('Digite [4] para lxc')
+        print('Digite [4] para lxd')
         print('\n----------------- CONTAINERS --------------------')
         print('Digite [5] para docker antigo')
         print('Digite [6] para docker novo')
@@ -32,7 +32,7 @@ class Main:
             CarregarPlottarGraficos(typePlot).xen_plottar()
             
         elif typePlot == 4:
-            CarregarPlottarGraficos(typePlot).lxc_plottar()
+            CarregarPlottarGraficos(typePlot).lxd_plottar()
             
         elif typePlot == 5:
             CarregarPlottarGraficos(typePlot).docker_antigo()

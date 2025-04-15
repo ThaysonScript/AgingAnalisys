@@ -27,7 +27,8 @@ class ManipulationPandas:
     
     
     def droparColunasNulasVazias(self, dataframe: pd):
-        return dataframe.dropna()
+        return dataframe.fillna(0)
+        # return dataframe.dropna()
     
     
     def droparSubColunasNulasVazias(self, dataframe: pd, subcoluna=''):
@@ -88,13 +89,16 @@ class ManipulationPandas:
         
     # def plotarGrafico(self, dataframe: pd, yLabel, xLabel, figureSize):
     #     return dataframe.plot.scatter(ylabel=yLabel, xlabel=xLabel, figsize=figureSize)
-    def plotarGrafico(self, dataframe: pd.DataFrame, x_col: str, y_col: str, yLabel: str, xLabel: str, figureSize=(10, 6)):
-        fig, ax = plt.subplots(figsize=figureSize)
-        ax.scatter(dataframe[x_col], dataframe[y_col], c='DarkBlue', label='Data points')
-        ax.set_xlabel(xLabel)
-        ax.set_ylabel(yLabel)
-        ax.legend()
-        return ax
+    # def plotarGrafico(self, dataframe: pd.DataFrame, x_col: str, y_col: str, yLabel: str, xLabel: str, figureSize=(10, 6)):
+    #     fig, ax = plt.subplots(figsize=figureSize)
+    #     ax.scatter(dataframe[x_col], dataframe[y_col], c='DarkBlue', label='Data points')
+    #     ax.set_xlabel(xLabel)
+    #     ax.set_ylabel(yLabel)
+    #     ax.legend()
+    #     return ax
+    
+    def plotarGrafico(self, dataframe: pd, yLabel, xLabel, figureSize):
+        return dataframe.plot(ylabel=yLabel, xlabel=xLabel, figsize=figureSize)
     
     
     def pivotarValoresDataframe(self, dataframe: pd, column, value):
@@ -121,11 +125,8 @@ class ManipulationPandas:
         
         # cols_to_divide = cols_to_divide if len(colunasParaDividir) != 0 else dataframe.columns
         dataframe[cols_to_divide] = dataframe[cols_to_divide].div(dividirPor)
-        return dataframe
-        
-        
-    def converterTempoRespostaServico(self, dataframe: pd):
-            return dataframe['response_time'] / 1000  
+            
+        return dataframe        
         
         
     def verificarErrosEGravar(self, dataframe, nomeArquivo):

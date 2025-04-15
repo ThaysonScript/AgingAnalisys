@@ -7,6 +7,10 @@ class CommonLogs():
         self.generalLogs = {
             'fragmentation':
                 f'{PASTA_LOGS}/fragmentation.csv',
+                
+            'cpu_sum_all_cores':
+                f'{PASTA_LOGS}/cpu_monitoring_sumAllCores.csv',
+                
             'monitoring_cpu':
                 f'{PASTA_LOGS}/machine_monitoring-cpu.csv',
                 
@@ -58,44 +62,101 @@ class LogsVbox():
     
 class LogsKvm():
     def __init__(self, PASTA_LOGS='', viewCommonLogs=False):
+        # if viewCommonLogs == True:
+        #     CommonLogs(PASTA_LOGS=PASTA_LOGS)
+        # else:
+        #     pass
+        
+        self.PASTA_LOGS = PASTA_LOGS
+        
         if viewCommonLogs == True:
-            CommonLogs(PASTA_LOGS=PASTA_LOGS)
+            self.commonLogs = CommonLogs(PASTA_LOGS=self.PASTA_LOGS).generalLogs
         else:
-            pass
+            print('Erro em LogsKvm para chamar classe CommonLogs')
+            sys.exit(1)
 
 
-    def KvmLogsProcess(self, PASTA_LOGS=''):
-        return {
+    def KvmLogsProcess(self):
+        kvmProcess = {
+            # 'cpu_sum_all_cores':
+            #     f'{self.PASTA_LOGS}/cpu_monitoring_sumAllCores.csv',
+                
             'kvm_Headless':
-                f'{PASTA_LOGS}/kvm_Headless_monitoring.csv',
+                f'{self.PASTA_LOGS}/kvm_Headless_monitoring.csv',
             
             'kvm_libvirtd_service':
-                f'{PASTA_LOGS}/kvm_libvirtd_service_monitoring.csv'
+                f'{self.PASTA_LOGS}/kvm_libvirtd_service_monitoring.csv'
         }
+        
+        return {**self.commonLogs, **kvmProcess}
     
     
 class LogsXen():
     def __init__(self, PASTA_LOGS='', viewCommonLogs=False):
+        # if viewCommonLogs == True:
+        #     CommonLogs(PASTA_LOGS=PASTA_LOGS)
+        # else:
+        #     pass
+        
+        self.PASTA_LOGS = PASTA_LOGS
+        
         if viewCommonLogs == True:
-            CommonLogs(PASTA_LOGS=PASTA_LOGS)
+            self.commonLogs = CommonLogs(PASTA_LOGS=self.PASTA_LOGS).generalLogs
         else:
-            pass
+            print('Erro em LogsXen para chamar classe CommonLogs')
+            sys.exit(1)
 
 
-    def XenLogsProcess(self, PASTA_LOGS=''):
-        return {
+    def XenLogsProcess(self):
+        xenProcess = {
+            # 'cpu_sum_all_cores':
+            #     f'{self.PASTA_LOGS}/cpu_monitoring_sumAllCores.csv',
+                
             'xen_monitoring_oxenstored':
-                f'{PASTA_LOGS}/xen_monitoring-oxenstored.csv',
+                f'{self.PASTA_LOGS}/xen_monitoring-oxenstored.csv',
             
             'xen_monitoring_xen_balloon':
-                f'{PASTA_LOGS}/xen_monitoring-xen-balloon.csv',
+                f'{self.PASTA_LOGS}/xen_monitoring-xen-balloon.csv',
                 
             'xen_monitoring_xenbus':
-                f'{PASTA_LOGS}/xen_monitoring-xenbus.csv',
+                f'{self.PASTA_LOGS}/xen_monitoring-xenbus.csv',
             
             'xen_monitoring_xenconsoled':
-                f'{PASTA_LOGS}/xen_monitoring-xenconsoled.csv'
+                f'{self.PASTA_LOGS}/xen_monitoring-xenconsoled.csv'
         }
+        
+        return {**self.commonLogs, **xenProcess}
+    
+    
+class LogsLxd():
+    def __init__(self, PASTA_LOGS='', viewCommonLogs=False):
+        # if viewCommonLogs == True:
+        #     CommonLogs(PASTA_LOGS=PASTA_LOGS)
+        # else:
+        #     pass
+        
+        self.PASTA_LOGS = PASTA_LOGS
+        
+        if viewCommonLogs == True:
+            self.commonLogs = CommonLogs(PASTA_LOGS=self.PASTA_LOGS).generalLogs
+        else:
+            print('Erro em LogsLxd para chamar classe CommonLogs')
+            sys.exit(1)
+
+
+    def LxdLogsProcess(self):
+        lxdProcess = {
+            # 'cpu_sum_all_cores':
+            #     f'{self.PASTA_LOGS}/cpu_monitoring_sumAllCores.csv',
+                
+            'lxd_vm_qemu_process':
+                f'{self.PASTA_LOGS}/lxd_vm_qemu_process.csv',
+            
+            'lxd_group_process_monitoring':
+                f'{self.PASTA_LOGS}/lxd_group_process_monitoring.csv'
+        }
+        
+        return {**self.commonLogs, **lxdProcess}
     
     
 class LogsDocker():
@@ -373,7 +434,7 @@ class Logs():
             if self.kvmMonitoringFolder == None:
                 sys.exit(1)
                 
-            LogsKvm(PASTA_LOGS=self.kvmMonitoringFolder, viewCommonLogs=ativarCommonLogs).KvmLogsProcess()
+            self.kvmLogs = LogsKvm(PASTA_LOGS=self.kvmMonitoringFolder, viewCommonLogs=ativarCommonLogs).KvmLogsProcess()
             
             
         elif tipo_virtualizador == 3:
@@ -381,10 +442,18 @@ class Logs():
             if self.xenMonitoringFolder == None:
                 sys.exit(1)
                 
-            LogsXen(PASTA_LOGS=self.xenMonitoringFolder, viewCommonLogs=ativarCommonLogs).XenLogsProcess()
+            self.xenLogs = LogsXen(PASTA_LOGS=self.xenMonitoringFolder, viewCommonLogs=ativarCommonLogs).XenLogsProcess()
+            
+
+        elif tipo_virtualizador == 4:
+            self.lxdMonitoringFolder = CreateDirectory().encontrarPastaLogs(diretorioBase='logs_monitoramento', padrao='lxd')
+            if self.lxdMonitoringFolder == None:
+                sys.exit(1)
+                
+            self.lxdLogs = LogsLxd(PASTA_LOGS=self.lxdMonitoringFolder, viewCommonLogs=ativarCommonLogs).LxdLogsProcess()
           
             
-        elif tipo_virtualizador == 4:
+        elif tipo_virtualizador == 5:
             dockerType = int(input('[1] - Docker antigo\n[2] - Docker atual: '))
             if dockerType == 1:
                 self.dockerOlder = CreateDirectory().encontrarPastaLogs(diretorioBase='logs_monitoramento', padrao='dockerOlder')
@@ -407,14 +476,14 @@ class Logs():
                 sys.exit(1)
             
             
-        elif tipo_virtualizador == 5:
+        elif tipo_virtualizador == 6:
             LogsPodman(PASTA_LOGS=self.nomePasta, viewCommonLogs=ativarCommonLogs).PodmanLogsProcess()
             
             
-        elif tipo_virtualizador == 6:
+        elif tipo_virtualizador == 7:
             LogsJmeter(PASTA_LOGS=self.nomePasta, viewCommonLogs=ativarCommonLogs).jmeterLogs(PASTA_LOGS=self.nomePasta)
             
             
         else:
-            print('Digite Numero entre 1 a 6')
+            print('Digite Numero entre 1 a 7')
             sys.exit(1)

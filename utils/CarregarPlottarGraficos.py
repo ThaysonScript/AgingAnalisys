@@ -9,6 +9,27 @@ from utils.Logs import Logs
 class CarregarPlottarGraficos():
     def __init__(self, tipo_virtualizador):
         self.virtualizador = tipo_virtualizador
+        
+        
+    def _common_ylabels(self):
+        return {
+            'cpu': 'CPU Usage (percentage)',
+            'mem': 'Memory Usage (percentage)',
+            'vmrss': 'Resident Set Size Memory Usage (MB)',
+            'vsz': 'Virtual Memory Size Usage (MB)',
+            'threads': 'Number of Threads (QTT)',
+            'swap': 'Used Swap Memory (MB)'
+        }
+        
+    
+    def _common_cpu_labels(self):
+        return {
+            '%usr': 'CPU time running processes in user space.',
+            '%nice': 'CPU running processes in user space (low priority).',
+            '%sys': 'CPU running in kernel space, such as system calls.',
+            '%iowait': 'CPU idle, waiting for input/output (I/O).',
+            '%soft': 'CPU processing software interrupts.'
+        }
     
     
     # ------------------------------------------------ VIRTUALIZADORES ------------------------------------------- #
@@ -19,13 +40,24 @@ class CarregarPlottarGraficos():
         #     ylabel='(none)',
         #     dayfirst=True, includeColYlabel=True
         # )
-        # sys.exit(1)
         
         vbox = Logs(self.virtualizador)
-        TratamentoErrosEnvelhecimentoLogs(vbox.vboxMonitoringFolder)
-        PlottarFragmentado().analisar(arquivo=vbox.vboxLogs['fragmentation'])
+        # TratamentoErrosEnvelhecimentoLogs(pasta_logs=vbox.vboxMonitoringFolder, barras=True, ponto=True)
+
+        # PlottarFragmentado().analisar(arquivo=vbox.vboxLogs['fragmentation'])
         # plot_fragmentation(vbox.vboxMonitoringFolder)
         
+        PlottarGraficos().plottar(
+            title="CPU - Sum All Cores", 
+            nomeArquivo=vbox.vboxLogs['cpu_sum_all_cores'], 
+            cols_to_divide=[
+                '%usr', '%nice', '%sys', '%iowait', '%soft',
+            ],
+            ylabel={
+                **self._common_cpu_labels()
+            },
+            dayfirst=True
+        )
         
         PlottarGraficos().plottar(
             nomeArquivo=vbox.vboxLogs['monitoring_cpu'], 
@@ -37,14 +69,14 @@ class CarregarPlottarGraficos():
         PlottarGraficos().plottar(
             title="Disk", 
             nomeArquivo=vbox.vboxLogs['monitoring_disks'], 
-            ylabel='Disk usage (GB)', 
+            ylabel='Disk Usage (GB)', 
             dayfirst=True, division=(1024**2)
         )
 
         PlottarGraficos().plottar(
-            title="Zumbis", 
+            title="Zombie", 
             nomeArquivo=vbox.vboxLogs['monitoring_zumbies'], 
-            ylabel='Zumbis processes(qtt)', 
+            ylabel='Zombie Processes (QTT)', 
             dayfirst=True
         )
 
@@ -59,14 +91,9 @@ class CarregarPlottarGraficos():
         PlottarGraficos().plottar(
             title="Process - VBoxHeadless", 
             nomeArquivo=vbox.vboxLogs['monitoring_VboxHeadless'], 
-            cols_to_divide=["vmrss","vsz","swap"],
+            cols_to_divide=["vmrss","vsz", "swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "vmrss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)',
-                "thread": "Number of threads(qtt)"
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
@@ -76,11 +103,7 @@ class CarregarPlottarGraficos():
             nomeArquivo=vbox.vboxLogs['monitoring_VboxSvc'], 
             cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "vmrss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)'
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
@@ -90,123 +113,138 @@ class CarregarPlottarGraficos():
             nomeArquivo=vbox.vboxLogs['monitoring_VboxXPCOMIPCD'], 
             cols_to_divide=["vmrss", "vsz", "swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "vmrss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)'
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
 
         PlottarGraficos().plottar(
-            title="Server response time", 
+            title="Nginx Response Time", 
             nomeArquivo=vbox.vboxLogs['server_response_time_monitoring'], 
-            ylabel='Response time(s)', 
-            multiply=1000, dayfirst=True
+            ylabel='Response Time (seconds)', 
+            multiply=1, dayfirst=True
         )
         
         
-    def kvm_plottar(self):
-        kvm = Logs()
+    def lxd_plottar(self):   
+        lxd = Logs(self.virtualizador)
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
+        # PlottarFragmentado().analisar(arquivo=lxd.lxdLogs['fragmentation'])
+        plot_fragmentation(lxd.lxdMonitoringFolder)
+        
+        PlottarGraficos().plottar(
+            title="CPU - Sum All Cores", 
+            nomeArquivo=lxd.lxdLogs['cpu_sum_all_cores'], 
+            cols_to_divide=[
+                '%usr', '%nice', '%sys', '%iowait', '%soft',
+            ],
+            ylabel={
+                **self._common_cpu_labels()
+            },
+            dayfirst=True
+        )
         
         PlottarGraficos().plottar(
         title="CPU",
-        filename=kvm['monitoring_cpu'], 
+        nomeArquivo=lxd.lxdLogs['monitoring_cpu'], 
         ylabel='(percentage)', 
         dayfirst=True, includeColYlabel=True
         )
 
         PlottarGraficos().plottar(
             title="Disk", 
-            filename=kvm['monitoring_disks'], 
-            ylabel='Disk usage (GB)', 
+            nomeArquivo=lxd.lxdLogs['monitoring_disks'], 
+            ylabel='Disk Usage (GB)', 
             dayfirst=True, division=(1024**2)
         )
 
         PlottarGraficos().plottar(
-            title="Zumbis", 
-            filename=kvm['monitoring_zumbies'], 
-            ylabel='Zumbies processes(qtt)', 
+            title="Zombie", 
+            nomeArquivo=lxd.lxdLogs['monitoring_zumbies'], 
+            ylabel='Zombie Processes (QTT)', 
             dayfirst=True
         )
 
         PlottarGraficos().plottar(
             title="Memory", 
-            filename=kvm['monitoring_mem'], 
+            nomeArquivo=lxd.lxdLogs['monitoring_mem'], 
             ylabel='(MB)', 
             dayfirst=True, 
-            division=1024, includeColYlabel=True
+            division=1000,
+            includeColYlabel=True
         )
         
         PlottarGraficos().plottar(
-            title="Process - kvmHeadless", 
-            filename=kvm['kvm_Headless'], 
+            title="Process - lxdHeadless", 
+            nomeArquivo=lxd.lxdLogs['lxd_Headless'], 
             cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "vmrss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)',
-                "thread": "Number of threads(qtt)"
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
 
         PlottarGraficos().plottar(
-            title="Process - kvm_libvirt_service", 
-            filename=kvm['kvm_libvirtd_service'], 
+            title="Process - lxd_libvirt_service", 
+            nomeArquivo=lxd.lxdLogs['lxd_libvirtd_service'], 
             cols_to_divide=["rss","vsz","swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "vmrss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)'
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
     
         PlottarGraficos().plottar(
-            title="Server response time", 
-            filename=kvm['server_response_time_monitoring'], 
-            ylabel='Response time (seconds)', 
+            title="Nginx Response Time", 
+            nomeArquivo=lxd.lxdLogs['server_response_time_monitoring'], 
+            ylabel='Response Time (seconds)', 
             multiply=1000, dayfirst=True
         )
 
 
     def xen_plottar(self):
-        xen = Logs()
+        xen = Logs(self.virtualizador)
         # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
         # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
+        # plot_fragmentation(xen.xenMonitoringFolder)
         
         PlottarGraficos().plottar(
-        title="CPU",
-        filename=xen['monitoring_cpu'], 
-        ylabel='(percentage)', 
-        dayfirst=True, includeColYlabel=True
+            title="CPU - Sum All Cores", 
+            nomeArquivo=xen.xenLogs['cpu_sum_all_cores'], 
+            cols_to_divide=[
+                '%usr', '%nice', '%sys', '%iowait', '%soft',
+            ],
+            ylabel={
+                **self._common_cpu_labels()
+            },
+            dayfirst=True
+        )
+        
+        PlottarGraficos().plottar(
+            title="CPU",
+            nomeArquivo=xen.xenLogs['monitoring_cpu'], 
+            ylabel='(percentage)', 
+            dayfirst=True, includeColYlabel=True
         )
 
         PlottarGraficos().plottar(
             title="Disk", 
-            filename=xen['monitoring_disks'], 
-            ylabel='Disk usage (GB)', 
+            nomeArquivo=xen.xenLogs['monitoring_disks'], 
+            ylabel='Disk Usage (GB)', 
             dayfirst=True, division=(1024**2)
         )
 
         PlottarGraficos().plottar(
-            title="Zumbis", 
-            filename=xen['monitoring_zumbies'], 
-            ylabel='Zumbis processes(qtt)', 
+            title="Zombie", 
+            nomeArquivo=xen.xenLogs['monitoring_zumbies'], 
+            ylabel='Zombie Processes (QTT)', 
             dayfirst=True
         )
 
         PlottarGraficos().plottar(
             title="Memory", 
-            filename=xen['monitoring_mem'], 
+            nomeArquivo=xen.xenLogs['monitoring_mem'], 
             ylabel='(MB)', 
             dayfirst=True, 
             division=1024, includeColYlabel=True
@@ -215,81 +253,127 @@ class CarregarPlottarGraficos():
         
         PlottarGraficos().plottar(
             title="Process - xen_monitoring_oxenstored", 
-            filename=xen['xen_monitoring_oxenstored'], 
-            cols_to_divide=["rss","vsz","swap"],
+            nomeArquivo=xen.xenLogs['xen_monitoring_oxenstored'], 
+            cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "rss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)',
-                "thread": "Number of threads(qtt)"
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
 
         PlottarGraficos().plottar(
             title="Process - xen_monitoring_xen_balloon", 
-            filename=xen['xen_monitoring_xen_balloon'], 
-            cols_to_divide=["rss","vsz","swap"],
+            nomeArquivo=xen.xenLogs['xen_monitoring_xen_balloon'], 
+            cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "rss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)'
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
         
         PlottarGraficos().plottar(
             title="Process - xen_monitoring_xenbus", 
-            filename=xen['xen_monitoring_xenbus'], 
-            cols_to_divide=["rss","vsz","swap"],
+            nomeArquivo=xen.xenLogs['xen_monitoring_xenbus'], 
+            cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                'mem': 'Memory usage (percentage)',
-                "rss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "thread": "Number of threads(qtt)",
-                "swap": "Swap used(MB)",
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
 
         PlottarGraficos().plottar(
             title="Process - xen_monitoring_xenconsoled", 
-            filename=xen['xen_monitoring_xenconsoled'], 
-            cols_to_divide=["rss","vsz","swap"],
+            nomeArquivo=xen.xenLogs['xen_monitoring_xenconsoled'], 
+            cols_to_divide=["vmrss","vsz","swap"],
             ylabel={
-                'cpu': 'CPU usage (percentage)',
-                "rss": "Physical memory usage(MB)",
-                "vsz": "Virtual memory usage (MB)",
-                "swap": "Swap used(MB)",
-                'mem': 'Memory usage (percentage)'
+                **self._common_ylabels()
             },
             division=1024, dayfirst=True
         )
 
         PlottarGraficos().plottar(
-            title="Server response time", 
-            filename=xen['server_response_time_monitoring'], 
-            ylabel='Response time (seconds)', 
-            multiply=1000, dayfirst=True
+            title="Nginx Response Time", 
+            nomeArquivo=xen.xenLogs['server_response_time_monitoring'], 
+            ylabel='Response Time (seconds)', 
+            multiply=1, dayfirst=True
+        )
+
+
+    def lxd_plottar(self):
+        lxd = Logs(self.virtualizador)
+        # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
+        # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
+        # PlottarFragmentado().analisar(arquivo=lxd.lxdLogs['fragmentation'])
+        # plot_fragmentation(lxd.lxdMonitoringFolder)
+        
+        PlottarGraficos().plottar(
+            title="CPU - Sum All Cores", 
+            nomeArquivo=lxd.lxdLogs['cpu_sum_all_cores'], 
+            cols_to_divide=[
+                '%usr', '%nice', '%sys', '%iowait', '%soft',
+            ],
+            ylabel={
+                **self._common_cpu_labels()
+            },
+            dayfirst=True
         )
         
         PlottarGraficos().plottar(
-        title="CPU_SUM",
-        filename=xen['monitoring_all_sum_cpu'], 
+        title="CPU",
+        nomeArquivo=lxd.lxdLogs['monitoring_cpu'], 
         ylabel='(percentage)', 
         dayfirst=True, includeColYlabel=True
         )
 
+        PlottarGraficos().plottar(
+            title="Disk", 
+            nomeArquivo=lxd.lxdLogs['monitoring_disks'], 
+            ylabel='Disk Usage (GB)', 
+            dayfirst=True, division=(1024**2)
+        )
 
-    def lxc_plottar(self):
-        # fragmentacao(MINIMUM_PROCESS_OCCURRENCES)
-        # PlottarGraficos().plottar_fragmentation(PASTA_LOGS)
-        pass
+        PlottarGraficos().plottar(
+            title="Zombie", 
+            nomeArquivo=lxd.lxdLogs['monitoring_zumbies'], 
+            ylabel='Zombie Processes (QTT)', 
+            dayfirst=True
+        )
+
+        PlottarGraficos().plottar(
+            title="Memory", 
+            nomeArquivo=lxd.lxdLogs['monitoring_mem'], 
+            ylabel='(MB)', 
+            dayfirst=True, 
+            division=1000,
+            includeColYlabel=True
+        )
+        
+        PlottarGraficos().plottar(
+            title="Process - lxd_vm_qemu_process", 
+            nomeArquivo=lxd.lxdLogs['lxd_vm_qemu_process'], 
+            cols_to_divide=["vmrss","vsz","swap"],
+            ylabel={
+                **self._common_ylabels()
+            },
+            division=1024, dayfirst=True
+        )
+
+        PlottarGraficos().plottar(
+            title="Process - lxd_group_process_monitoring", 
+            nomeArquivo=lxd.lxdLogs['lxd_group_process_monitoring'], 
+            cols_to_divide=["rss","vsz","swap"],
+            ylabel={
+                **self._common_ylabels()
+            },
+            division=1024, dayfirst=True
+        )
+    
+        PlottarGraficos().plottar(
+            title="Nginx Response Time", 
+            nomeArquivo=lxd.lxdLogs['server_response_time_monitoring'], 
+            ylabel='Response Time (seconds)', 
+            multiply=1000, dayfirst=True
+        )
 
 
     # ------------------------------------------------ CONTAINERS ------------------------------------------- #
